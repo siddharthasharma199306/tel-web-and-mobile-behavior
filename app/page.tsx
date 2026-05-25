@@ -1,65 +1,159 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useMemo } from "react";
+
+type TelCase = {
+  label: string;
+  href: string;
+  notes?: string;
+};
+
+export default function Page() {
+  const telCases: TelCase[] = [
+    {
+      label: "International Format (Recommended)",
+      href: "tel:+919876543210",
+      notes: "E.164 format",
+    },
+    {
+      label: "Local Number",
+      href: "tel:9876543210",
+    },
+    {
+      label: "Hyphenated Number",
+      href: "tel:+91-98765-43210",
+    },
+    {
+      label: "Parentheses Format",
+      href: "tel:(98765)43210",
+    },
+    {
+      label: "Extension via ext",
+      href: "tel:+919876543210;ext=123",
+    },
+    {
+      label: "Pause + Extension",
+      href: "tel:+919876543210,,123",
+    },
+    {
+      label: "USSD Style",
+      href: "tel:*123%23",
+      notes: "# encoded",
+    },
+  ];
+
+  const handleAnchorClick = (href: string, label: string) => {
+    localStorage.setItem(
+      "lastTelAttempt",
+      JSON.stringify({
+        href,
+        label,
+        timestamp: new Date().toISOString(),
+      }),
+    );
+  };
+
+  const deviceInfo = useMemo(() => {
+    if (typeof window === "undefined") return null;
+
+    return {
+      userAgent: navigator.userAgent,
+      platform: navigator.platform,
+      language: navigator.language,
+      cookiesEnabled: navigator.cookieEnabled,
+      online: navigator.onLine,
+      touchPoints: navigator.maxTouchPoints,
+      screen: `${window.screen.width}x${window.screen.height}`,
+      viewport: `${window.innerWidth}x${window.innerHeight}`,
+      pixelRatio: window.devicePixelRatio,
+      standalone: (window.navigator as any).standalone ?? false,
+      url: window.location.href,
+      timestamp: new Date().toISOString(),
+    };
+  }, []);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <main className="min-h-screen bg-slate-100 text-slate-900">
+      <div className="mx-auto max-w-7xl p-4 md:p-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold">
+            tel: Browser Compatibility Tester
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+
+          <p className="mt-2 text-sm text-slate-600">
+            Use this page to validate tel: behavior across browsers
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div className="grid gap-6 lg:grid-cols-3">
+          <div className="space-y-6 lg:col-span-2">
+            <Section title="Basic tel: Anchor Tests">
+              <div className="grid gap-3 md:grid-cols-2">
+                {telCases.map((item) => (
+                  <div
+                    key={item.label}
+                    className="rounded-2xl border bg-white p-4 shadow-sm"
+                  >
+                    <div className="mb-3">
+                      <div className="font-semibold">{item.label}</div>
+
+                      <div className="text-sm text-slate-500">{item.href}</div>
+
+                      {item.notes && (
+                        <div className="mt-1 text-xs text-slate-400">
+                          {item.notes}
+                        </div>
+                      )}
+                    </div>
+
+                    <a
+                      href={item.href}
+                      onClick={() => handleAnchorClick(item.href, item.label)}
+                      className="inline-flex rounded-xl bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+                    >
+                      Test Anchor
+                    </a>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          </div>
+
+          <div className="space-y-6">
+            <Section title="Environment Info">
+              <pre className="overflow-auto rounded-2xl bg-slate-900 p-4 text-xs text-green-300">
+                {JSON.stringify(deviceInfo, null, 2)}
+              </pre>
+            </Section>
+          </div>
         </div>
-      </main>
-    </div>
+      </div>
+
+      <div className="fixed bottom-0 left-0 right-0 border-t bg-white p-4 shadow lg:hidden">
+        <a
+          href="tel:+919876543210"
+          onClick={() => handleAnchorClick("tel:+919876543210", "Sticky CTA")}
+          className="block rounded-2xl bg-green-600 py-3 text-center font-semibold text-white"
+        >
+          Quick Call Test
+        </a>
+      </div>
+    </main>
+  );
+}
+
+function Section({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="rounded-3xl border bg-white p-5 shadow-sm">
+      <h2 className="mb-4 text-xl font-bold">{title}</h2>
+
+      {children}
+    </section>
   );
 }
