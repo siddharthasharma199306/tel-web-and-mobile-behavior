@@ -11,12 +11,43 @@ type TelCase = {
 export default function Page() {
   const telCases: TelCase[] = [
     {
-      label: "International Format (Recommended)",
-      href: "tel:+919876543210",
-      notes: "E.164 format",
+      label: "US Toll-Free Number",
+      href: "tel:+1-800-555-0199",
     },
     {
-      label: "Local Number",
+      label: "US Local Format (No Country Code)",
+      href: "tel:212-555-0143",
+    },
+    {
+      label: "US Number with Extension",
+      href: "tel:+1-212-555-0177,1234",
+    },
+    {
+      label: "US E.164 Pure Digits",
+      href: "tel:+12125550122",
+    },
+    {
+      label: "US Parentheses and Spaces",
+      href: "tel:+1-(212)-555-0155",
+    },
+    {
+      label: "US Dotted Format",
+      href: "tel:1.212.555.0166",
+    },
+    {
+      label: "Invalid - Too Short",
+      href: "tel:+1-212-555",
+    },
+    {
+      label: "Invalid - Too Long",
+      href: "tel:+1-212-555-0143-999",
+    },
+    {
+      label: "Invalid - Bad Characters",
+      href: "tel:+1-212-555-01abc",
+    },
+    {
+      label: "Local India Number",
       href: "tel:9876543210",
     },
     {
@@ -53,30 +84,11 @@ export default function Page() {
     );
   };
 
-  const deviceInfo = useMemo(() => {
-    if (typeof window === "undefined") return null;
-
-    return {
-      userAgent: navigator.userAgent,
-      platform: navigator.platform,
-      language: navigator.language,
-      cookiesEnabled: navigator.cookieEnabled,
-      online: navigator.onLine,
-      touchPoints: navigator.maxTouchPoints,
-      screen: `${window.screen.width}x${window.screen.height}`,
-      viewport: `${window.innerWidth}x${window.innerHeight}`,
-      pixelRatio: window.devicePixelRatio,
-      standalone: (window.navigator as any).standalone ?? false,
-      url: window.location.href,
-      timestamp: new Date().toISOString(),
-    };
-  }, []);
-
   return (
-    <main className="min-h-screen bg-slate-100 text-slate-900">
-      <div className="mx-auto max-w-7xl p-4 md:p-8">
+    <main className="min-h-screen overflow-x-hidden bg-slate-100 text-slate-900">
+      <div className="mx-auto max-w-7xl px-4 py-4 pb-28 md:p-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold">
+          <h1 className="text-2xl font-bold sm:text-3xl">
             tel: Browser Compatibility Tester
           </h1>
 
@@ -85,19 +97,23 @@ export default function Page() {
           </p>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-3">
-          <div className="space-y-6 lg:col-span-2">
+        <div className="grid gap-6 xl:grid-cols-3">
+          <div className="space-y-6 xl:col-span-2">
             <Section title="Basic tel: Anchor Tests">
               <div className="grid gap-3 md:grid-cols-2">
                 {telCases.map((item) => (
                   <div
                     key={item.label}
-                    className="rounded-2xl border bg-white p-4 shadow-sm"
+                    className="min-w-0 rounded-2xl border bg-white p-4 shadow-sm"
                   >
                     <div className="mb-3">
-                      <div className="font-semibold">{item.label}</div>
+                      <div className="text-sm font-semibold leading-snug sm:text-base">
+                        {item.label}
+                      </div>
 
-                      <div className="text-sm text-slate-500">{item.href}</div>
+                      <div className="break-all text-sm text-slate-500">
+                        {item.href}
+                      </div>
 
                       {item.notes && (
                         <div className="mt-1 text-xs text-slate-400">
@@ -109,7 +125,7 @@ export default function Page() {
                     <a
                       href={item.href}
                       onClick={() => handleAnchorClick(item.href, item.label)}
-                      className="inline-flex rounded-xl bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+                      className="inline-flex w-full items-center justify-center rounded-xl bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700 sm:w-auto"
                     >
                       Test Anchor
                     </a>
@@ -118,25 +134,7 @@ export default function Page() {
               </div>
             </Section>
           </div>
-
-          <div className="space-y-6">
-            <Section title="Environment Info">
-              <pre className="overflow-auto rounded-2xl bg-slate-900 p-4 text-xs text-green-300">
-                {JSON.stringify(deviceInfo, null, 2)}
-              </pre>
-            </Section>
-          </div>
         </div>
-      </div>
-
-      <div className="fixed bottom-0 left-0 right-0 border-t bg-white p-4 shadow lg:hidden">
-        <a
-          href="tel:+919876543210"
-          onClick={() => handleAnchorClick("tel:+919876543210", "Sticky CTA")}
-          className="block rounded-2xl bg-green-600 py-3 text-center font-semibold text-white"
-        >
-          Quick Call Test
-        </a>
       </div>
     </main>
   );
@@ -150,8 +148,8 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-3xl border bg-white p-5 shadow-sm">
-      <h2 className="mb-4 text-xl font-bold">{title}</h2>
+    <section className="rounded-3xl border bg-white p-4 shadow-sm sm:p-5">
+      <h2 className="mb-4 text-lg font-bold sm:text-xl">{title}</h2>
 
       {children}
     </section>
